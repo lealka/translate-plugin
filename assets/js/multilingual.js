@@ -1,6 +1,6 @@
 /*
  * Multi lingual control plugin
- * 
+ *
  * Data attributes:
  * - data-control="multilingual" - enables the plugin on an element
  * - data-default-locale="en" - default locale code
@@ -33,7 +33,14 @@
          */
         this.activeLocale = this.options.defaultLocale
         this.$activeField = this.getLocaleElement(this.activeLocale)
-        this.$activeButton.text(this.activeLocale)
+
+        //FIXME: HACK by Al-Ka
+        if (this.activeLocale == 'en') {
+            this.$activeButton.text('zh-hk')
+        } else {
+            this.$activeButton.text(this.activeLocale)
+        }
+        //END: Hack by Al-ka
 
         this.$dropdown.on('click', '[data-switch-locale]', this.$activeButton, function(event){
             var currentLocale = event.data.text();
@@ -101,7 +108,15 @@
     MultiLingual.prototype.setLocale = function(locale) {
         this.activeLocale = locale
         this.$activeField = this.getLocaleElement(locale)
-        this.$activeButton.text(locale)
+
+        //FIXME: HACK by Al-Ka
+        if (locale == 'en') {
+            this.$activeButton.text('zh-hk')
+        } else {
+            this.$activeButton.text(locale)
+        }
+        //END: HACK by Al-Ka
+
 
         this.$placeholder.val(this.getLocaleValue(locale))
         this.$el.trigger('setLocale.oc.multilingual', [locale, this.getLocaleValue(locale)])
