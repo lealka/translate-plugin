@@ -193,9 +193,12 @@ class EventRegistry
             return;
         }
 
-        if (!empty($widget->fields) && !$widget->isNested) {
+        //FIXME: Hack by Al-Ka: allow nestedform
+        //if (!empty($widget->fields) && !$widget->isNested) {
+        if (!empty($widget->fields)) {
             $widget->fields = $this->processFormMLFields($widget->fields, $model);
         }
+        //END: Hack by Al-Ka
 
         if (!empty($widget->tabs['fields'])) {
             $widget->tabs['fields'] = $this->processFormMLFields($widget->tabs['fields'], $model);
@@ -221,6 +224,7 @@ class EventRegistry
             'richeditor'  => 'mlricheditor',
             'text'        => 'mltext',
             'textarea'    => 'mltextarea',
+            'nestedform'    => 'mlnestedform',
         ];
 
         $translatable = array_flip($model->getTranslatableAttributes());
@@ -321,78 +325,5 @@ class EventRegistry
         return $templates->filter(function($template) use ($extensions) {
             return !Str::endsWith($template->getBaseFileName(), $extensions);
         });
-    }
-
-    /**
-     * Adds language suffixes to mail view files.
-     * @param  \October\Rain\Mail\Mailer $mailer
-     * @param  \Illuminate\Mail\Message $message
-     * @param  string $view
-     * @param  array $data
-     * @param  string $raw
-     * @param  string $plain
-     * @return bool|void Will return false if the translation process successfully replaced the original message with a translated version to prevent the original version from being processed.
-     */
-    public function findLocalizedMailViewContent($mailer, $message, $view, $data, $raw, $plain)
-    {
-        // Raw content cannot be localized at this level
-        if (!empty($raw)) {
-            return;
-        }
-
-        // Get the locale to use for this template
-        $locale = !empty($data['_current_locale']) ? $data['_current_locale'] : App::getLocale();
-
-        $factory = $mailer->getViewFactory();
-
-        if (!empty($view)) {
-            $view = $this->getLocalizedView($factory, $view, $locale);
-        }
-
-        if (!empty($plain)) {
-            $plain = $this->getLocalizedView($factory, $plain, $locale);
-        }
-
-        $code = $view ?: $plain;
-        if (empty($code)) {
-            return null;
-        }
-
-        $plainOnly = empty($view);
-
-        if (MailManager::instance()->addContentToMailer($message, $code, $data, $plainOnly)) {
-            // the caller who fired the event is expecting a FALSE response to halt the event
-            return false;
-        }
-    }
-
-
-    /**
-     * Search mail view files based on locale
-     * @param  \October\Rain\Mail\Mailer $mailer
-     * @param  \Illuminate\Mail\Message $message
-     * @param  string $code
-     * @param  string $locale
-     * @return string|null
-     */
-    public function getLocalizedView($factory, $code, $locale)
-    {
-        $locale = strtolower($locale);
-
-        $searchPaths[] = $locale;
-
-        if (str_contains($locale, '-')) {
-            list($lang) = explode('-', $locale);
-            $searchPaths[] = $lang;
-        }
-
-        foreach ($searchPaths as $path) {
-            $localizedView = sprintf('%s-%s', $code, $path);
-
-            if ($factory->exists($localizedView)) {
-                return $localizedView;
-            }
-        }
-        return null;
     }
 }

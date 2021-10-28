@@ -17,3 +17,13 @@
 .field-multilingual.field-multilingual-repeater.is-empty .ml-dropdown-menu{top:15px;right:-7px}
 .fancy-layout .field-multilingual-text input.form-control{padding-right:44px}
 .help-block.before-field + .field-multilingual.field-multilingual-textarea .ml-btn{top:-41px}
+
+.field-multilingual.field-multilingual-nestedform.using-panel-styles > .ml-btn {
+    top: 10px;
+    right: 20px;
+}
+
+.field-multilingual.field-multilingual-nestedform.using-panel-styles > .ml-dropdown-menu {
+    top: 40px;
+    right: 5px;
+}
