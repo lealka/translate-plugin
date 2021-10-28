@@ -1,5 +1,5 @@
 {
-    "name": "rainlab/translate-plugin",
+    "name": "rainlab/translate",
     "type": "october-plugin",
     "description": "Translate plugin for October CMS",
     "homepage": "https://octobercms.com/plugin/rainlab-translate",
