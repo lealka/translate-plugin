@@ -3,6 +3,9 @@
     <?php
         $value = $this->getLocaleValue($code);
         $value = $this->isLocaleFieldJsonable() ? json_encode($value) : $value;
+        if (is_array($value)) {
+            dd($field->getName('RLTranslate['.$code.']'), $value);
+        }
     ?>
     <input
         type="hidden"
