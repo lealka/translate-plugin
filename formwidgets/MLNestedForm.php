@@ -203,4 +203,16 @@ class MLNestedForm extends NestedForm
         array_set($requestData, $fieldName, json_encode($data));
         Request::merge($requestData);
     }
+
+    //FIXME: HACK by Al-Ka
+    /**
+     * processSaveValue splices in some meta data (group and index values) to the dataset
+     * @param array $value
+     * @return array|null
+     */
+    protected function processSaveValue($value)
+    {
+        return null;
+    }
+    //END: HACK by Al-Ka
 }
