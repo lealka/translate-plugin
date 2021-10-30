@@ -3,13 +3,21 @@
     <?php
         $value = $this->getLocaleValue($code);
         $value = $this->isLocaleFieldJsonable() ? json_encode($value) : $value;
-        if (is_array($value)) {
-            dd($field->getName('RLTranslate['.$code.']'), $value);
+        $fieldName = $field->getName('RLTranslate['.$code.']');
+
+        //FIXME: HACK by Al-Ka
+        if (strpos($field->fieldName, 'mlnf_') !== false) {
+            $arrayName = $field->arrayName;
+            $fieldName = $field->getName('RLTranslate['.$code.'][mlnf]' .
+                ($arrayName ? substr($arrayName, strpos($arrayName, '['), strlen($arrayName)) : ''));
+        } elseif($field->config['type'] === 'mlnestedform') {
+            continue;
         }
+        //END: HACK by Al-Ka
     ?>
     <input
         type="hidden"
-        name="<?= $field->getName('RLTranslate['.$code.']') ?>"
+        name="<?= $fieldName ?>"
         value="<?= e($value) ?>"
         data-locale-value="<?= $code ?>"
         <?= $field->getAttributes() ?>

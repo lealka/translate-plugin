@@ -197,10 +197,15 @@ class MLNestedForm extends NestedForm
          * Splice the save data in to the locker data for selected locale
          */
         $data = $this->getPrimarySaveDataAsArray();
-        $fieldName = 'RLTranslate.'.$locale.'.'.implode('.', HtmlHelper::nameToArray($this->fieldName));
+
+        //@FIXME: HACK by Al-Ka
+        $fieldName = class_basename($this->formWidget->model) . '.' . implode('.', HtmlHelper::nameToArray($this->fieldName));
+        //END: HACK by Al-Ka
 
         $requestData = Request::all();
-        array_set($requestData, $fieldName, json_encode($data));
+        //@FIXME: HACK by Al-Ka
+        array_set($requestData, $fieldName, $data);
+        //END: HACK by Al-Ka
         Request::merge($requestData);
     }
 
@@ -212,7 +217,60 @@ class MLNestedForm extends NestedForm
      */
     protected function processSaveValue($value)
     {
-        return null;
+        $values = $this->getLocaleSaveData();
+
+        return $values['en'];
+    }
+
+    /**
+     * Returns an array of translated values for this field
+     * @return array
+     */
+    public function getLocaleSaveData()
+    {
+        $values = [];
+        $post = post();
+        $data = $post['RLTranslate'];
+
+        if (!is_array($data)) {
+            return $values;
+        }
+
+        $fieldName = implode('.', HtmlHelper::nameToArray($this->fieldName));
+        $fullValue = $post[class_basename($this->formWidget->model)][$fieldName];
+        $enValue = $data['en']['mlnf'][$fieldName];
+        foreach ($data as $locale => $_data) {
+            $value = $fullValue;
+            $value = $this->getLocaleSaveDataItem($value, $enValue, $_data['mlnf'][$fieldName]);
+
+            $values[$locale] = $value;
+        }
+
+        return $values;
+    }
+
+    private function getLocaleSaveDataItem($value, $enValue, $localValue)
+    {
+        foreach ($value as $k => $v) {
+            if (is_array($v)) {
+                if (array_key_exists($k, $enValue)) {
+                    $value[$k] = $this->getLocaleSaveDataItem($v, $enValue[$k], $localValue[$k]);
+                } else {
+                    $value[$k] = $v;
+                }
+            } else {
+                $value[$k] = $v;
+                if (array_key_exists($k, $localValue) &&
+                    ($localValue[$k] || $localValue[$k] === 0)
+                ) {
+                    $value[$k] = $localValue[$k];
+                } elseif (array_key_exists($k, $enValue)) {
+                    $value[$k] = $enValue[$k];
+                }
+            }
+        }
+
+        return $value;
     }
     //END: HACK by Al-Ka
 }
