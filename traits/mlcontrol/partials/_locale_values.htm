@@ -8,8 +8,16 @@
         //FIXME: HACK by Al-Ka
         if (strpos($field->fieldName, 'mlnf_') !== false) {
             $arrayName = $field->arrayName;
-            $fieldName = $field->getName('RLTranslate['.$code.'][mlnf]' .
-                ($arrayName ? substr($arrayName, strpos($arrayName, '['), strlen($arrayName)) : ''));
+            $arrayNameShort = $arrayName ? substr($arrayName, strpos($arrayName, '['), strlen($arrayName)) : '';
+            $fieldName = $field->getName('RLTranslate['.$code.'][mlnf]' . $arrayNameShort);
+
+            if ($code != 'en') {
+                $nameInArray = \October\Rain\Html\Helper::nameToArray($arrayName);
+                $parentValue = $this->model->lang($code)->{$nameInArray[1]};
+                unset($nameInArray[0]);
+                unset($nameInArray[1]);
+                $value = array_get($parentValue, implode('.', $nameInArray) . '.' . $field->fieldName);
+            }
         } elseif($field->config['type'] === 'mlnestedform') {
             continue;
         }
