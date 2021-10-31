@@ -11,16 +11,13 @@
             $arrayNameShort = $arrayName ? substr($arrayName, strpos($arrayName, '['), strlen($arrayName)) : '';
             $fieldName = $field->getName('RLTranslate['.$code.'][mlnf]' . $arrayNameShort);
 
-            if (!$value || $code != 'en') {
+            if ($code != 'en') {
                 $nameInArray = \October\Rain\Html\Helper::nameToArray($arrayName);
                 $parentValue = $this->model->lang($code)->{$nameInArray[1]};
                 unset($nameInArray[0]);
                 unset($nameInArray[1]);
                 $nameInString = implode('.', $nameInArray);
                 $value = array_get($parentValue, $nameInString . '.' . $field->fieldName);
-                if (!$value) {
-                    $value = array_get($parentValue, $nameInString . '.' . substr($field->fieldName, 5));
-                }
             }
         } elseif($field->config['type'] === 'mlnestedform') {
             continue;
