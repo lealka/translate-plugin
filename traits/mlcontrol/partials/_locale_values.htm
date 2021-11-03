@@ -6,7 +6,7 @@
         $fieldName = $field->getName('RLTranslate['.$code.']');
 
         //FIXME: HACK by Al-Ka
-        if (strpos($field->fieldName, 'mlnf_') !== false) {
+        if (strpos($field->fieldName, 'mlnf_') === 0) {
             $arrayName = $field->arrayName;
             $arrayNameShort = $arrayName ? substr($arrayName, strpos($arrayName, '['), strlen($arrayName)) : '';
             $fieldName = $field->getName('RLTranslate['.$code.'][mlnf]' . $arrayNameShort);
