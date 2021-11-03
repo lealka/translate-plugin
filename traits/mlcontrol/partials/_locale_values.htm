@@ -16,7 +16,9 @@
                 $parentValue = $this->model->lang($code)->{$nameInArray[1]};
                 unset($nameInArray[0]);
                 unset($nameInArray[1]);
-                $value = array_get($parentValue, implode('.', $nameInArray) . '.' . $field->fieldName);
+                $nameInArray[] = $field->fieldName;
+                $nameInString = implode('.', $nameInArray);
+                $value = array_get($parentValue, $nameInString);
             }
         } elseif($field->config['type'] === 'mlnestedform') {
             continue;
